@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup as soup
-from urllib import urlopen
+from urllib.request import urlopen
 
 my_url = 'https://www.formula1.com/en/results.html/1950/races/94/great-britain/race-result.html'
 uClient = urlopen(my_url)
