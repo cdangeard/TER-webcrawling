@@ -15,5 +15,26 @@ page_html = uClient.read()
 uClient.close()
 
 page_soup = soup(page_html,"html.parser")
-temp = page_soup.td.next.next.next.next.next.next.next.next.get_text()
-print(temp)
+
+temp = page_soup.findAll('tr')
+
+dates = []
+pays = []
+prenoms = []
+noms = []
+cars = []
+laps = []
+time = []
+for ligne in temp[1:]:
+    pays.append(ligne.a.text.replace(" ","").replace("\n",""))
+    dates.append(ligne.find('td', "dark hide-for-mobile").text)
+    prenoms.append(ligne.find('span',"hide-for-tablet").text)
+    noms.append(ligne.find('span',"hide-for-mobile").text)
+    cars.append(ligne.find("td", "semi-bold uppercase ").text)
+    laps.append(ligne.find("td", "bold hide-for-mobile").text)
+    time.append(ligne.find("td", "dark bold hide-for-tablet").text)
+
+filename = my_url.replace(".html","").replace("https://www.formula1.com/","").replace("/","-") + ".csv"
+out = csv.writer(open(filename,"w"), delimiter=',',quoting=csv.QUOTE_ALL)
+for colonne in [dates, pays, prenoms, noms, cars, laps, time]:
+    out.writerow(colonne)
