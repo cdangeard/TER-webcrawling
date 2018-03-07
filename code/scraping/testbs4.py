@@ -6,7 +6,7 @@ from urllib.request import urlopen
 import csv
 
 #récupération de l'url
-my_url = 'https://www.formula1.com/en/results.html/1950/drivers/94/great-britain/race-result.html'
+my_url = 'https://www.formula1.com/en/results.html/1961/races/189/netherlands.html'
 #ouverture d'un client url
 uClient = urlopen(my_url)
 #stockage du code html de la page
@@ -20,4 +20,4 @@ page_soup = soup(page_html,"html.parser")
 #find_all() ou findAll() fait le meme effet, mais rend une liste des occurences (utilisation recomandé pour futurs traitement)
 
 temp = page_soup.findAll('tr')
-print(temp[1].find("a","grey").text)
+print(page_soup.find("p", "date").find("span","full-date").text)
