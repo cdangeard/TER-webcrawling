@@ -35,12 +35,6 @@ def allraceExtract(url, csvreturn = False):
         cars.append(ligne.find("td", "semi-bold uppercase ").text)
         laps.append(ligne.find("td", "bold hide-for-mobile").text)
         time.append(ligne.find("td", "dark bold hide-for-tablet").text)
-    if csvreturn:
-        filename = my_url.replace(".html","").replace("https://www.formula1.com/","").replace("/","-") + ".csv"
-        out = csv.writer(open(filename,"w"), delimiter=',',quoting=csv.QUOTE_ALL)
-        for colonne in tableau:
-            out.writerow(colonne)
-        return None
     return tableau
 
 def raceinfoExtract(url):
@@ -56,7 +50,7 @@ def raceinfoExtract(url):
     return [titre, date, circuit]
 
 
-def raceExtract(url, csvreturn = False):
+def raceExtract(url):
     #ouverture d'un client url
     uClient = urlopen(url)
     #stockage du code html de la page
@@ -79,15 +73,9 @@ def raceExtract(url, csvreturn = False):
         prenoms.append(ligne.find('span',"hide-for-tablet").text)
         noms.append(ligne.find('span',"hide-for-mobile").text)
         cars.append(ligne.find("td", "semi-bold uppercase hide-for-tablet").text)
-    if csvreturn:
-        filename = my_url.replace(".html","").replace("https://www.formula1.com/","").replace("/","-") + ".csv"
-        out = csv.writer(open(filename,"w"), delimiter=',',quoting=csv.QUOTE_ALL)
-        for colonne in tableau:
-            out.writerow(colonne)
-        return None
     return tableau
 
-def driversExtract(url, csvreturn = False):
+def driversExtract(url):
     #ouverture d'un client url
     uClient = urlopen(url)
     #stockage du code html de la page
@@ -111,10 +99,4 @@ def driversExtract(url, csvreturn = False):
         noms.append(ligne.find('span',"hide-for-mobile").text)
         nationality.append(ligne.find("td", "dark semi-bold uppercase").text)
         car.append(ligne.find("a","grey").text)
-    if csvreturn:
-        filename = my_url.replace(".html","").replace("https://www.formula1.com/","").replace("/","-") + ".csv"
-        out = csv.writer(open(filename,"w"), delimiter=',',quoting=csv.QUOTE_ALL)
-        for colonne in tableau:
-            out.writerow(colonne)
-        return None
     return tableau
