@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
 #librairie pour l'export en csv
 import csv
-from tableExtract import raceExtract,raceinfoExtract, driversExtract, allraceExtract
-from linkExtract import yearUrlExtract, raceUrlExtract
+from tableExtract import raceExtract,raceinfoExtract, driversExtract, allraceExtract, practiceExtract
+from linkExtract import yearUrlExtract, raceUrlExtract, practiceUrl
 
 url = 'https://www.formula1.com/en/results.html'
 liste_dates = yearUrlExtract(url)
@@ -32,3 +32,7 @@ for annee in liste_dates[1:]:
         print(raceinfoExtract(course))
         print('\n')
         print(raceExtract(course))
+        practices = practiceUrl(course)
+        print('\n')
+        for practice in practices:
+            print(practiceExtract(practice))

@@ -54,7 +54,7 @@ def raceExtract(url):
     #ouverture d'un client url
     uClient = urlopen(url)
     #stockage du code html de la page
-     page_html = uClient.read()
+    page_html = uClient.read()
     #fermerture du client
     uClient.close()
     page_soup = soup(page_html,"html.parser")
@@ -68,7 +68,7 @@ def raceExtract(url):
     tableau = [pos, no, prenoms, noms, cars]
 
     for ligne in temp[1:]:
-        pos.append(ligne.find('td', "dark"))
+        pos.append(ligne.find('td', "dark").text)
         no.append(ligne.find('td', "dark hide-for-mobile").text)
         prenoms.append(ligne.find('span',"hide-for-tablet").text)
         noms.append(ligne.find('span',"hide-for-mobile").text)
@@ -99,4 +99,21 @@ def driversExtract(url):
         noms.append(ligne.find('span',"hide-for-mobile").text)
         nationality.append(ligne.find("td", "dark semi-bold uppercase").text)
         car.append(ligne.find("a","grey").text)
+    return tableau
+
+def practiceExtract(url):
+    #ouverture d'un client url
+    uClient = urlopen(url)
+    #stockage du code html de la page
+    page_html = uClient.read()
+    #fermerture du client
+    uClient.close()
+    page_soup = soup(page_html,"html.parser")
+    temp = page_soup.findAll('tr')
+    prenoms = []
+    noms = []
+    tableau = [prenoms, noms]
+    for ligne in temp[1:]:
+        prenoms.append(ligne.find('span',"hide-for-tablet").text)
+        noms.append(ligne.find('span',"hide-for-mobile").text)
     return tableau

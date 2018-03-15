@@ -35,3 +35,19 @@ def raceUrlExtract(url):
     for race in listeRace:
         liste_urls.append('https://www.formula1.com' + race.a["href"])
     return liste_urls
+
+def practiceUrl(url):
+    #ouverture d'un client url
+    uClient = urlopen(url)
+    #stockage du code html de la page
+    page_html = uClient.read()
+    #fermerture du client
+    uClient.close()
+    page_soup = soup(page_html,"html.parser")
+    liste_urls = []
+    liste_scroll = page_soup.find_all("li","side-nav-item")
+    liste_practice = []
+    for it in liste_scroll[1:]:
+        if it.a["data-value"][:8] == 'practice':
+            liste_practice.append('https://www.formula1.com' + it.a["href"])
+    return liste_practice
