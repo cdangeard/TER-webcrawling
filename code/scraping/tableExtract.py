@@ -54,7 +54,7 @@ def raceExtract(url):
     #ouverture d'un client url
     uClient = urlopen(url)
     #stockage du code html de la page
-    page_html = uClient.read()
+     page_html = uClient.read()
     #fermerture du client
     uClient.close()
     page_soup = soup(page_html,"html.parser")
