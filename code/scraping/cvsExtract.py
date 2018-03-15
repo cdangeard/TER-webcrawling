@@ -8,8 +8,10 @@ from tableExtract import raceExtract,raceinfoExtract, driversExtract, allraceExt
 from linkExtract import yearUrlExtract, raceUrlExtract, practiceUrl
 
 def sortiecvs(table, url):
-    filename = url.replace(".html","").replace("https://www.formula1.com/","").replace("/","-") + ".csv"
-    out = csv.writer(open('cvs/' + filename,"w"), delimiter=',',quoting=csv.QUOTE_ALL)
+    filename = 'cvs/' + url.replace(".html","").replace("https://www.formula1.com/","").replace("/","-") + ".csv"
+    out = csv.writer(open(filename,"w"), delimiter=',',quoting=csv.QUOTE_ALL)
     for colonne in table:
         out.writerow(colonne)
     return None
+
+#sortiecvs(practiceExtract('https://www.formula1.com/en/results.html/1996/races/638/australia/practice-2.html'),'https://www.formula1.com/en/results.html/1996/races/638/australia/practice-2.html')
