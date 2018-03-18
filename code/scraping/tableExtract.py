@@ -49,6 +49,38 @@ def raceinfoExtract(url):
     circuit = page_soup.find("p", "date").find("span","circuit-info").text
     return [titre, date, circuit]
 
+def gridExtract(url):
+#exrait la position en début du course et le numero des joueurs
+    uClient = urlopen(url)
+    #stockage du code html de la page
+    page_html = uClient.read()
+    #fermerture du client
+    uClient.close()
+    page_soup = soup(page_html,"html.parser")
+    liste_scroll = page_soup.find_all("li","side-nav-item")
+    for it in liste_scroll[1:]:
+        if it.a["data-value"] == 'starting-grid':
+            url_practice = ('https://www.formula1.com' + it.a["href"])
+            print(url_practice)
+            #ouverture d'un client url
+            uClient = urlopen(url_practice)
+            #stockage du code html de la page
+            page_html = uClient.read()
+            #fermerture du client
+            uClient.close()
+            page_soup2 = soup(page_html,"html.parser")
+            temp = page_soup2.findAll('tr')
+
+            pos = []
+            no = []
+            tableau =[pos, no]
+            for ligne in temp[1:]:
+                darkTruc = ligne.find_all('td', 'dark')
+                pos.append(darkTruc[0].text)
+                no.append(darkTruc[1].text)
+            return tableau
+    return []
+
 
 def raceExtract(url):
     #ouverture d'un client url
