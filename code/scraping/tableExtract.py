@@ -117,16 +117,12 @@ def driversExtract(url):
     page_soup = soup(page_html,"html.parser")
     temp = page_soup.findAll('tr')
 
-    pos = []
     prenoms = []
     noms = []
     nationality = []
     car = []
-    points = []
-    tableau = [pos, prenoms, noms,nationality, car]
-
+    tableau = [prenoms, noms, nationality, car]
     for ligne in temp[1:]:
-        pos.append(ligne.find('td', "dark").text)
         prenoms.append(ligne.find('span',"hide-for-tablet").text)
         noms.append(ligne.find('span',"hide-for-mobile").text)
         nationality.append(ligne.find("td", "dark semi-bold uppercase").text)
