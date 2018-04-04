@@ -19,7 +19,7 @@ def urlIntoYear(url):
 def boucleAffiche(url):
     liste_dates = yearUrlExtract(url)
     print(liste_dates)
-    for annee in liste_dates[1:]:
+    for annee in liste_dates:
         print('\n\n ########'+annee+'######## \n\n')
         print('\n #####race###### \n')
         print(allraceExtract(annee))
@@ -28,7 +28,7 @@ def boucleAffiche(url):
         print(driversExtract(driver))
         liste_courses = raceUrlExtract(annee)
         print(liste_courses)
-        for course in liste_courses[1:]:
+        for course in liste_courses:
             print('\n #####'+course+'#######"" \n')
             print(raceinfoExtract(course))
             print('\n')
@@ -40,21 +40,30 @@ def boucleAffiche(url):
 
 def AllShape(url):
     liste_dates = yearUrlExtract(url)
-    teamName = []
-    DriverNom = []
-    DriverPrenom = []
-    nat = []
-    rSeason = []
-    rDriverNb = []
-    racedriver = [DriverPrenom, DriverNom, nat, teamName,  rSeason, rDriverNb]
-    for annee in liste_dates[1:]:
+    DriverNom = DriverPrenom = []
+    driver = [DriverPrenom, DriverNom]
+    idDriver = teamName = rSeason = rDrivernb = []
+    racedriver = [idDriver, teamName, rSeason, rDrivernb]
+    idDriver = teamName = idGp = sGrid = sPos = sInc = sPoints = sLaps = []
+    standing = [idDriver, teamName, idGp, sGrid, sPos, sInc, sPoints, sLaps]
+    gnom = gcircuit = gdate = glaps = []
+    grandPrix = [gnom, gcircuit, gdate, glaps]
+    for annee in liste_dates:
         print(annee)
-        ydriver = driversExtract(annee.replace('races','drivers'))
-        DriverPrenom.append(ydriver[0])
-        DriverNom.append(ydriver[1])
-        nat.append(ydriver[2])
-        teamName.append(ydriver[3])
-        rSeason = [urlIntoYear(url)]*len(ydriver[0])
+        liste_courses = raceUrlExtract(annee)
+        for course in liste_courses:
+            print(course)
+            raceinfo = raceinfoExtract(course)
+            
+
+
+
+        #ydriver = driversExtract(annee.replace('races','drivers'))
+        #DriverPrenom.append(ydriver[0])
+        #DriverNom.append(ydriver[1])
+        #nat.append(ydriver[2])
+        #teamName.append(ydriver[3])
+        #rSeason = [urlIntoYear(url)]*len(ydriver[0])
     print()
     return racedriver
 

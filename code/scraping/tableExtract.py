@@ -107,6 +107,7 @@ def raceExtract(url):
         cars.append(ligne.find("td", "semi-bold uppercase hide-for-tablet").text)
     return tableau
 
+#retourne nom prénom, nationalitu (format 3 lettres), et team de la page driver
 def driversExtract(url):
     #ouverture d'un client url
     uClient = urlopen(url)

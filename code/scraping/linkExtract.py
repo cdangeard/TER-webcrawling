@@ -18,7 +18,7 @@ def yearUrlExtract(url):
     listeYear = liste_scroll[0].find_all("li", "resultsarchive-filter-item")
     for year in listeYear:
         liste_urls.append('https://www.formula1.com' + year.a["href"])
-    return liste_urls
+    return liste_urls[1:]
 
 
 def raceUrlExtract(url):
@@ -34,7 +34,7 @@ def raceUrlExtract(url):
     listeRace = liste_scroll[2].find_all("li", "resultsarchive-filter-item")
     for race in listeRace:
         liste_urls.append('https://www.formula1.com' + race.a["href"])
-    return liste_urls
+    return liste_urls[1:]
 
 def practiceUrl(url):
     #ouverture d'un client url
