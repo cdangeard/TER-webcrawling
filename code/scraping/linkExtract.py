@@ -5,6 +5,7 @@ from urllib.request import urlopen
 #librairie pour l'export en csv
 import csv
 
+#retourne un tableau avec la liste des urls de differentes années disponible dans le menu déroulant de gauche
 def yearUrlExtract(url):
     #ouverture d'un client url
     uClient = urlopen(url)
@@ -20,7 +21,7 @@ def yearUrlExtract(url):
         liste_urls.append('https://www.formula1.com' + year.a["href"])
     return liste_urls[1:]
 
-
+#retourne la liste des url des differentes courses disponible dans le menu déroulant de droite
 def raceUrlExtract(url):
     #ouverture d'un client url
     uClient = urlopen(url)
@@ -36,6 +37,7 @@ def raceUrlExtract(url):
         liste_urls.append('https://www.formula1.com' + race.a["href"])
     return liste_urls[1:]
 
+#retourne si possible, la liste des urls des courses "practice", disponible dans le sous menu des grand prix
 def practiceUrl(url):
     #ouverture d'un client url
     uClient = urlopen(url)
