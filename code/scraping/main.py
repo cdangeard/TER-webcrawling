@@ -12,10 +12,12 @@ url = 'https://www.formula1.com/en/results.html'
 url2 = 'https://www.formula1.com/en/results.html/2003/races/737/australia.html'
 url3 = 'https://www.formula1.com/en/results.html/2006/races/737/australia/race-result.html'
 
+#recupere l'année dans un url
 def urlIntoYear(url):
     pos = url.find('html')
     return url[pos+5:pos+9]
 
+#affiche sur le terminal, la totalité des extractions des differentes pages
 def boucleAffiche(url):
     liste_dates = yearUrlExtract(url)
     print(liste_dates)
@@ -38,6 +40,8 @@ def boucleAffiche(url):
             for practice in practices:
                 print(practiceExtract(practice))
 
+#extrait et met en forme les données du site en vu d'integration dans la bdd retourne un tableau de tableau de tableau, avec les differents table
+#les tableau contenant un id font ref à la position dans un tableau
 def AllShape(url):
     liste_dates = yearUrlExtract(url)
     DriverNom = DriverPrenom = []
@@ -98,8 +102,13 @@ def ShapeOneYear(url):
         #rSeason = [urlIntoYear(url)]*len(ydriver[0])
     return racedriver
 
+<<<<<<< HEAD
 ShapeOneYear(url2)
 #sortiecvsTable(AllShape(url),'racedriver')
+=======
+######### MAIN ############
+sortiecvsTable(AllShape(url),'racedriver')
+>>>>>>> 36fb408a07e06494ad19f694b709dd927a845390
 #print(gridExtract('https://www.formula1.com/en/results.html/2006/races/791/malaysia.html'))
 #boucleAffiche(url)
 #driverShaping(url3,999)
