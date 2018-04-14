@@ -47,7 +47,8 @@ def raceinfoExtract(url):
     titre = page_soup.h1.text.replace("  ","").replace("\n","").replace(" - RACE RESULT","")[5:]
     date = page_soup.find("p", "date").find("span","full-date").text
     circuit = page_soup.find("p", "date").find("span","circuit-info").text
-    return [titre, date, circuit]
+    laps = page_soup.findAll("tr")[1].find("td", "bold hide-for-mobile").text
+    return [titre, date, circuit, laps]
 
 def gridExtract(url):
 #exrait la position en début du course et le numero des joueurs
@@ -61,7 +62,6 @@ def gridExtract(url):
     for it in liste_scroll[1:]:
         if it.a["data-value"] == 'starting-grid':
             url_practice = ('https://www.formula1.com' + it.a["href"])
-            print(url_practice)
             #ouverture d'un client url
             uClient = urlopen(url_practice)
             #stockage du code html de la page
