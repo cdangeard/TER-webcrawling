@@ -98,7 +98,10 @@ def raceExtract(url):
     prenoms = []
     noms = []
     cars = []
-    tableau = [pos, no, prenoms, noms, cars]
+    laps = []
+    time = []
+    pts = []
+    tableau = [pos, no, prenoms, noms, cars, laps, time, pts]
 
     for ligne in temp[1:]:
         pos.append(ligne.find('td', "dark").text)
@@ -106,6 +109,9 @@ def raceExtract(url):
         prenoms.append(ligne.find('span',"hide-for-tablet").text)
         noms.append(ligne.find('span',"hide-for-mobile").text)
         cars.append(ligne.find("td", "semi-bold uppercase hide-for-tablet").text)
+        laps.append(ligne.find("td", "bold hide-for-mobile").text)
+        time.append(ligne.findAll("td", "dark bold")[1].text)
+        pts.append(ligne.findAll("td", "bold")[3].text)
     return tableau
 
 #retourne nom prénom, nationalitu (format 3 lettres), et team de la page driver

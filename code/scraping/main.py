@@ -4,13 +4,14 @@ from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
 #librairie pour l'export en csv
 import csv
+import pprint
 from tableExtract import raceExtract,raceinfoExtract, driversExtract, allraceExtract, practiceExtract, gridExtract
 from linkExtract import yearUrlExtract, raceUrlExtract, practiceUrl
 from cvsExtract import sortiecvsTable, sortiecvsUrl
 
 url = 'https://www.formula1.com/en/results.html'
 url2 = 'https://www.formula1.com/en/results.html/2003/races/737/australia.html'
-url3 = 'https://www.formula1.com/en/results.html/2006/races/737/australia/race-result.html'
+url3 = 'https://www.formula1.com/en/results.html/2006/races/792/australia.html'
 
 #recupere l'année dans un url
 def urlIntoYear(url):
@@ -62,35 +63,65 @@ def AllShape(url):
 def ajoutDriver(tableprenom, tablenom, tableteam, tablenum, prenom, nom, team, num):
     for i in range(0,len(tableprenom)):
         if (nom == tablenom[i] and prenom == tableprenom[i]):
-            return [tableprenom, tablenom, tableteam, tablenum]
-    return [tableprenom + [prenom], tablenom + [nom], tableteam + [team], tablenum+ [num]]#len(tableDriver[0])-1,
+            return [tableprenom, tablenom, tableteam, tablenum, i]
+    return [tableprenom + [prenom], tablenom + [nom], tableteam + [team], tablenum+ [num], len(tableprenom)+1]#len(tableDriver[0])-1,
+
+def startingpos(num, sgrid):
+    for i in range(0, len(sgrid[0])):
+        if num == sgrid[1][i]:
+            return sgrid[0][i]
+    return ''
+
 
 def ShapeOneYear(url):
     DriverNom = DriverPrenom = teamName = rSeason = rDrivernb = []
-    racedriver = [DriverPrenom, DriverNom, teamName, rSeason, rDrivernb]#wtf tiens pas compte des modifs?
-    idDriver = teamName = idGp = sGrid = sPos = sInc = sPoints = sLaps = []
-    standing = [idDriver, teamName, idGp, sGrid, sPos, sInc, sPoints, sLaps]
+    #racedriver = [DriverPrenom, DriverNom, teamName, rSeason, rDrivernb]#wtf tiens pas compte des modifs?
+    sidDriver = steamName = sidGp = sGrid = sPos = sInc = sPoints = sLaps = []
+    #standing = [sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps]
     gnom = gcircuit = gdate = glaps = []
-    grandPrix = [gnom, gcircuit, gdate, glaps]
+    #grandPrix = [gnom, gcircuit, gdate, glaps]
     liste_courses = raceUrlExtract(url)
+    gid = 0
+    grandPrix = []
     for course in liste_courses[0:3]:
         print(course)
         season = urlIntoYear(url)
-
         #infos sur le grand grix
-        raceinfo = raceinfoExtract(course)
-        gnom.append(raceinfo[0])
-        gdate.append(raceinfo[1])
-        gcircuit.append(raceinfo[2])
-        glaps.append(raceinfo[3])
+        grandPrix.append(raceinfoExtract(course))
+        #gnom += [raceinfo[0]]
+        #gdate += [raceinfo[1]]
+        #gcircuit += [raceinfo[2]]
+        #glaps += [raceinfo[3]]
+
         #drivers present sur le circuit
-        race = raceExtract(course)#pos, no, prenom, nom, team
+        race = raceExtract(course)#0.pos, 1.no, 2.prenom, 3.nom, 4.team,5.laps, 6.time ,7.pts
         grid = gridExtract(course)#pos , no
         for i in range(0, len(race[0])):
-            [DriverPrenom, DriverNom, teamName, rDrivernb] = ajoutDriver(DriverPrenom, DriverNom, teamName, rDrivernb, race[2][i], race[3][i], race[4][i], race[1][i])
+            [DriverPrenom, DriverNom, teamName, rDrivernb, idDri] = ajoutDriver(DriverPrenom, DriverNom, teamName, rDrivernb, race[2][i], race[3][i], race[4][i], race[1][i])
+            steamName.append(race[4][i])
+            sidGp.append(gid)
+            sPos.append(race[0][i])
+            sPoints.append(race[7][i])
+            sLaps.append(race[5][i])
+            if race[6][i] == 'DNF':
+                sInc.append('DNF')
+            else:
+                sInc.append('')
+            sGrid.append(startingpos(race[0][i], grid))
 
+            #sGrid
+            sGrid.append(grid[0][i])
+        gid = gid + 1
+
+
+    rSeason = [urlIntoYear(url)]*len(DriverPrenom)
     racedriver = [DriverPrenom, DriverNom, teamName, rSeason, rDrivernb]
-    print(racedriver)
+    #grandPrix = [gnom, gcircuit, gdate, glaps]
+    standing = [sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps]
+    #print(standing)
+    print(grandPrix)
+
+
         #print(racedriver[0])
         #for i in range(grid[0]):
             #
@@ -99,16 +130,18 @@ def ShapeOneYear(url):
         #DriverNom.append(ydriver[1])
         #nat.append(ydriver[2])
         #teamName.append(ydriver[3])
-        #rSeason = [urlIntoYear(url)]*len(ydriver[0])
-    return racedriver
 
-<<<<<<< HEAD
-ShapeOneYear(url2)
+    return racedriver, grandPrix, standing
+
+racedriver, grandPrix, standing = ShapeOneYear(url2)
+sortiecvsTable(racedriver,urlIntoYear(url2)+'-racedriver')
+sortiecvsTable(grandPrix,urlIntoYear(url2)+'-grandPrix')
+sortiecvsTable(standing,urlIntoYear(url2)+'-standing')
 #sortiecvsTable(AllShape(url),'racedriver')
-=======
+
 ######### MAIN ############
-sortiecvsTable(AllShape(url),'racedriver')
->>>>>>> 36fb408a07e06494ad19f694b709dd927a845390
+#sortiecvsTable(AllShape(url),'racedriver')
+
 #print(gridExtract('https://www.formula1.com/en/results.html/2006/races/791/malaysia.html'))
 #boucleAffiche(url)
 #driverShaping(url3,999)

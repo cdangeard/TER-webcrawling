@@ -18,7 +18,7 @@ def sortiecvsUrl(table, url):
 #sort un tableau de tableau au format csv, dont le nom est donné
 def sortiecvsTable(table, name):
     filename = name+".csv"
-    out = csv.writer(open(filename,"w"), delimiter=',',quoting=csv.QUOTE_ALL)
-    for colonne in table:
-        out.writerow(colonne)
+    with open(filename,'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(table)
     return None
