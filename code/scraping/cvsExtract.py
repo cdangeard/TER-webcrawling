@@ -9,7 +9,7 @@ from linkExtract import yearUrlExtract, raceUrlExtract, practiceUrl
 
 #sort un tableau de tableau au format csv, en adaptant un url en nom de fichier
 def sortiecvsUrl(table, url):
-    filename = 'cvs/' + url.replace(".html","").replace("https://www.formula1.com/","").replace("/","-") + ".csv"
+    filename = 'csv/' + url.replace(".html","").replace("https://www.formula1.com/","").replace("/","-") + ".csv"
     out = csv.writer(open(filename,"w"), delimiter=',',quoting=csv.QUOTE_ALL)
     for colonne in table:
         out.writerow(colonne)
@@ -17,7 +17,7 @@ def sortiecvsUrl(table, url):
 
 #sort un tableau de tableau au format csv, dont le nom est donné
 def sortiecvsTable(table, name):
-    filename = name+".csv"
+    filename = "csv/" + name + ".csv"
     with open(filename,'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(table)

@@ -5,6 +5,7 @@ from urllib.request import urlopen
 #librairie pour l'export en csv
 import csv
 import pprint
+import numpy as np #pour manipuler les taleaux facilement
 from tableExtract import raceExtract,raceinfoExtract, driversExtract, allraceExtract, practiceExtract, gridExtract
 from linkExtract import yearUrlExtract, raceUrlExtract, practiceUrl
 from cvsExtract import sortiecvsTable, sortiecvsUrl
@@ -17,6 +18,9 @@ url3 = 'https://www.formula1.com/en/results.html/2006/races/792/australia.html'
 def urlIntoYear(url):
     pos = url.find('html')
     return url[pos+5:pos+9]
+
+def renverse(table):
+    return np.array(table).transpose().tolist()
 
 #affiche sur le terminal, la totalité des extractions des differentes pages
 def boucleAffiche(url):
@@ -60,18 +64,30 @@ def AllShape(url):
             print(course)
             raceinfo = raceinfoExtract(course)
 
-def ajoutDriver(tableprenom, tablenom, tableteam, tablenum, prenom, nom, team, num):
+def startingpos(num, grid):
+    for i in range(0, len(grid[0])):
+        if num == grid[1][i]:
+            return grid[0][i]
+    return ''
+
+def ajoutDriver(tableprenom, tablenom, tableteam, tablenum, prenom, nom, team, num, ):
     for i in range(0,len(tableprenom)):
         if (nom == tablenom[i] and prenom == tableprenom[i]):
             return [tableprenom, tablenom, tableteam, tablenum, i]
     return [tableprenom + [prenom], tablenom + [nom], tableteam + [team], tablenum+ [num], len(tableprenom)+1]#len(tableDriver[0])-1,
 
-def startingpos(num, sgrid):
-    for i in range(0, len(sgrid[0])):
-        if num == sgrid[1][i]:
-            return sgrid[0][i]
-    return ''
-
+def ajoutStanding(tsidDriver, tsteamName, tsidGp, tsGrid, tsPos, tsInc, tsPoints, tsLaps, tableRace, tableGrid, gid):
+    sidDriver = tableRace[1]
+    steamName = tableRace[4]
+    sPos = tableRace[0]
+    sPoints = tableRace[7]
+    sLaps = tableRace[5]
+    if tableRace[6] == 'DNF':
+        sInc = 'DNF'
+    else:
+        sInc = ''
+    sGrid = startingpos(tableRace[1], tableGrid)
+    return [tsidDriver + [sidDriver], tsteamName + [steamName], tsidGp + [gid], tsGrid + [sGrid], tsPos + [sPos], tsInc + [sInc], tsPoints + [sPoints], tsLaps + [sLaps]]
 
 def ShapeOneYear(url):
     DriverNom = DriverPrenom = teamName = rSeason = rDrivernb = []
@@ -83,7 +99,7 @@ def ShapeOneYear(url):
     liste_courses = raceUrlExtract(url)
     gid = 0
     grandPrix = []
-    for course in liste_courses[0:3]:
+    for course in liste_courses:
         print(course)
         season = urlIntoYear(url)
         #infos sur le grand grix
@@ -96,21 +112,11 @@ def ShapeOneYear(url):
         #drivers present sur le circuit
         race = raceExtract(course)#0.pos, 1.no, 2.prenom, 3.nom, 4.team,5.laps, 6.time ,7.pts
         grid = gridExtract(course)#pos , no
+        raceinv = renverse(race)
+        #print(len(grid[0])== len(race[1]))
         for i in range(0, len(race[0])):
             [DriverPrenom, DriverNom, teamName, rDrivernb, idDri] = ajoutDriver(DriverPrenom, DriverNom, teamName, rDrivernb, race[2][i], race[3][i], race[4][i], race[1][i])
-            steamName.append(race[4][i])
-            sidGp.append(gid)
-            sPos.append(race[0][i])
-            sPoints.append(race[7][i])
-            sLaps.append(race[5][i])
-            if race[6][i] == 'DNF':
-                sInc.append('DNF')
-            else:
-                sInc.append('')
-            sGrid.append(startingpos(race[0][i], grid))
-
-            #sGrid
-            sGrid.append(grid[0][i])
+            [sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps] = ajoutStanding(sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps , raceinv[i], grid, gid)
         gid = gid + 1
 
 
@@ -119,8 +125,6 @@ def ShapeOneYear(url):
     #grandPrix = [gnom, gcircuit, gdate, glaps]
     standing = [sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps]
     #print(standing)
-    print(grandPrix)
-
 
         #print(racedriver[0])
         #for i in range(grid[0]):
@@ -133,10 +137,11 @@ def ShapeOneYear(url):
 
     return racedriver, grandPrix, standing
 
+
 racedriver, grandPrix, standing = ShapeOneYear(url2)
-sortiecvsTable(racedriver,urlIntoYear(url2)+'-racedriver')
+sortiecvsTable(renverse(racedriver),urlIntoYear(url2)+'-racedriver')
 sortiecvsTable(grandPrix,urlIntoYear(url2)+'-grandPrix')
-sortiecvsTable(standing,urlIntoYear(url2)+'-standing')
+sortiecvsTable(renverse(standing),urlIntoYear(url2)+'-standing')
 #sortiecvsTable(AllShape(url),'racedriver')
 
 ######### MAIN ############
