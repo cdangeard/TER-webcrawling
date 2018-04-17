@@ -12,7 +12,7 @@ from cvsExtract import sortiecvsTable, sortiecvsUrl
 
 url = 'https://www.formula1.com/en/results.html'
 url2 = 'https://www.formula1.com/en/results.html/2003/races/737/australia.html'
-url3 = 'https://www.formula1.com/en/results.html/2006/races/792/australia.html'
+url3 = 'https://www.formula1.com/en/results.html/1951/races.html'
 
 #recupere l'année dans un url
 def urlIntoYear(url):
@@ -49,9 +49,10 @@ def boucleAffiche(url):
 
 #resort la position au départ d'un coureur en fonction de son numéro de con
 def startingpos(num, grid):
-    for i in range(0, len(grid[0])):
-        if num == grid[1][i]:
-            return grid[0][i]
+    if grid != []:
+        for i in range(0, len(grid[0])):
+            if num == grid[1][i]:
+                return grid[0][i]
     return ''
 
 #ajoute les données à la table racedriver, pour un coureur
@@ -134,5 +135,5 @@ def sortieCSVAllyear(url = 'https://www.formula1.com/en/results.html'):
 
 ######### MAIN ############
 
-#sortieCSVOneyear(url2)
-sortieCSVAllyear()
+sortieCSVOneyear(url3)
+#sortieCSVAllyear()
