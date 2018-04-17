@@ -8,7 +8,7 @@ import datetime
 #connection a PHP my admin
 connection = pymysql.connect(host='pedago.univ-rennes2.fr',
                              user='21501288',
-                             password='FAf0WM7hz9xuIqp0Zdqs',
+                             password='',
                              db='Base-21501288-2',
                              charset='utf8',
                              cursorclass=pymysql.cursors.DictCursor)
