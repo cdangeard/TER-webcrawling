@@ -19,10 +19,12 @@ def urlIntoYear(url):
     pos = url.find('html')
     return url[pos+5:pos+9]
 
+#renverse une table (transposé matricielle, ou inversion de l'ordre des indices fonctionne pour une liste de listes)
 def renverse(table):
     return np.array(table).transpose().tolist()
 
 #affiche sur le terminal, la totalité des extractions des differentes pages
+#execution tres longue
 def boucleAffiche(url):
     liste_dates = yearUrlExtract(url)
     print(liste_dates)
@@ -45,37 +47,21 @@ def boucleAffiche(url):
             for practice in practices:
                 print(practiceExtract(practice))
 
-#extrait et met en forme les données du site en vu d'integration dans la bdd retourne un tableau de tableau de tableau, avec les differents table
-#les tableau contenant un id font ref à la position dans un tableau
-def AllShape(url):
-    liste_dates = yearUrlExtract(url)
-    DriverNom = DriverPrenom = []
-    driver = [DriverPrenom, DriverNom]
-    idDriver = teamName = rSeason = rDrivernb = []
-    racedriver = [idDriver, teamName, rSeason, rDrivernb]
-    idDriver = teamName = idGp = sGrid = sPos = sInc = sPoints = sLaps = []
-    standing = [idDriver, teamName, idGp, sGrid, sPos, sInc, sPoints, sLaps]
-    gnom = gcircuit = gdate = glaps = []
-    grandPrix = [gnom, gcircuit, gdate, glaps]
-    for annee in liste_dates:
-        print(annee)
-        liste_courses = raceUrlExtract(annee)
-        for course in liste_courses:
-            print(course)
-            raceinfo = raceinfoExtract(course)
-
+#resort la position au départ d'un coureur en fonction de son numéro de con
 def startingpos(num, grid):
     for i in range(0, len(grid[0])):
         if num == grid[1][i]:
             return grid[0][i]
     return ''
 
-def ajoutDriver(tableprenom, tablenom, tableteam, tablenum, prenom, nom, team, num, ):
+#ajoute les données à la table racedriver, pour un coureur
+def ajoutDriver(tableprenom, tablenom, tableteam, tablenum, num, prenom, nom, team):
     for i in range(0,len(tableprenom)):
         if (nom == tablenom[i] and prenom == tableprenom[i]):
             return [tableprenom, tablenom, tableteam, tablenum, i]
     return [tableprenom + [prenom], tablenom + [nom], tableteam + [team], tablenum+ [num], len(tableprenom)+1]#len(tableDriver[0])-1,
 
+#ajoute les données à la table standing, pour un coureur
 def ajoutStanding(tsidDriver, tsteamName, tsidGp, tsGrid, tsPos, tsInc, tsPoints, tsLaps, tableRace, tableGrid, gid):
     sidDriver = tableRace[1]
     steamName = tableRace[4]
@@ -89,9 +75,12 @@ def ajoutStanding(tsidDriver, tsteamName, tsidGp, tsGrid, tsPos, tsInc, tsPoints
     sGrid = startingpos(tableRace[1], tableGrid)
     return [tsidDriver + [sidDriver], tsteamName + [steamName], tsidGp + [gid], tsGrid + [sGrid], tsPos + [sPos], tsInc + [sInc], tsPoints + [sPoints], tsLaps + [sLaps]]
 
+
+#Extrait et transforme les données en vue d'etre integrer dans la BDD, les tableaux en sortie sont au meme format que dans sortieCSVOneyear
+#seulement ce sont des listes de listes pyton
 def ShapeOneYear(url):
     DriverNom = DriverPrenom = teamName = rSeason = rDrivernb = []
-    #racedriver = [DriverPrenom, DriverNom, teamName, rSeason, rDrivernb]#wtf tiens pas compte des modifs?
+    #racedriver = [DriverPrenom, DriverNom, teamName, rSeason, rDrivernb]
     sidDriver = steamName = sidGp = sGrid = sPos = sInc = sPoints = sLaps = []
     #standing = [sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps]
     gnom = gcircuit = gdate = glaps = []
@@ -104,49 +93,46 @@ def ShapeOneYear(url):
         season = urlIntoYear(url)
         #infos sur le grand grix
         grandPrix.append(raceinfoExtract(course))
-        #gnom += [raceinfo[0]]
-        #gdate += [raceinfo[1]]
-        #gcircuit += [raceinfo[2]]
-        #glaps += [raceinfo[3]]
 
         #drivers present sur le circuit
         race = raceExtract(course)#0.pos, 1.no, 2.prenom, 3.nom, 4.team,5.laps, 6.time ,7.pts
         grid = gridExtract(course)#pos , no
-        raceinv = renverse(race)
-        #print(len(grid[0])== len(race[1]))
+        raceinv = renverse(race)#plus facile à manipuler
+        #
         for i in range(0, len(race[0])):
-            [DriverPrenom, DriverNom, teamName, rDrivernb, idDri] = ajoutDriver(DriverPrenom, DriverNom, teamName, rDrivernb, race[2][i], race[3][i], race[4][i], race[1][i])
+            [DriverPrenom, DriverNom, teamName, rDrivernb, idDri] = ajoutDriver(DriverPrenom, DriverNom, teamName, rDrivernb, raceinv[i][1], raceinv[i][2], raceinv[i][3], raceinv[i][4])
             [sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps] = ajoutStanding(sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps , raceinv[i], grid, gid)
         gid = gid + 1
-
-
     rSeason = [urlIntoYear(url)]*len(DriverPrenom)
     racedriver = [DriverPrenom, DriverNom, teamName, rSeason, rDrivernb]
-    #grandPrix = [gnom, gcircuit, gdate, glaps]
     standing = [sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps]
-    #print(standing)
-
-        #print(racedriver[0])
-        #for i in range(grid[0]):
-            #
-        #ydriver = driversExtract(annee.replace('races','drivers'))
-        #DriverPrenom.append(ydriver[0])
-        #DriverNom.append(ydriver[1])
-        #nat.append(ydriver[2])
-        #teamName.append(ydriver[3])
-
     return racedriver, grandPrix, standing
 
+#sort trois tableaux csv contenant les infos extrait du site pour une année
+#en entrée, l'url de la page principale de l'année en question
+#en sortie:
+#le tableau racedriver, contenant par colonne dans cet ordre: [DriverPrenom, DriverNom, teamName, rSeason, rDrivernb]
+#le tableau standing , contenant par colonne dans cet ordre: [sidDriver, steamName, sidGp, sGrid, sPos, sInc, sPoints, sLaps]
+# avec sidGp le numéro python (de 0 à n-1) du grandPrix dans le tableau suivant
+#le tableau Gp , contenant par colonne dans cet ordre:[gnom, gcircuit, gdate, glaps]
+#gcircuit n'est pas encore mis en forme totalement, pour le moment le nom du circuit contient le pays (à revoir en foncition de la norme BDD pour les pays)
+def sortieCSVOneyear(url):
+    racedriver, grandPrix, standing = ShapeOneYear(url)
+    sortiecvsTable(renverse(racedriver),urlIntoYear(url)+'-racedriver')
+    sortiecvsTable(grandPrix,urlIntoYear(url)+'-grandPrix')
+    sortiecvsTable(renverse(standing),urlIntoYear(url)+'-standing')
+    return None
 
-racedriver, grandPrix, standing = ShapeOneYear(url2)
-sortiecvsTable(renverse(racedriver),urlIntoYear(url2)+'-racedriver')
-sortiecvsTable(grandPrix,urlIntoYear(url2)+'-grandPrix')
-sortiecvsTable(renverse(standing),urlIntoYear(url2)+'-standing')
-#sortiecvsTable(AllShape(url),'racedriver')
+#extrait du site la totalité des tableaux pour toute les années disponible sur le site web
+#execution tres longue
+def sortieCSVAllyear(url = 'https://www.formula1.com/en/results.html'):
+    liste_dates = yearUrlExtract(url)
+    for annee in liste_dates:
+        sortieCSVOneyear(annee)
+    return None
+
 
 ######### MAIN ############
-#sortiecvsTable(AllShape(url),'racedriver')
 
-#print(gridExtract('https://www.formula1.com/en/results.html/2006/races/791/malaysia.html'))
-#boucleAffiche(url)
-#driverShaping(url3,999)
+#sortieCSVOneyear(url2)
+sortieCSVAllyear()
